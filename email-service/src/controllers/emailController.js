@@ -15,12 +15,21 @@ var mailOptions = {
  * Send an email confirmation.
  */
 const sendConfirmation = (order, orderChannel) => {
-    orderContent = JSON.parse(order.content.toString());
-    mailOptions.text += `Your order ${orderContent._id} amounting to ${orderContent.total} is confirmed and will be delivered shortly.`
-    mailOptions.to = orderContent.email;
-    sendEmail(mailOptions, (error, info) => {
+    const orderContent = JSON.parse(order.content.toString());
+
+    // Create a fresh mailOptions object for each email to avoid text accumulation
+    const currentMailOptions = {
+        from: mailOptions.from,
+        to: orderContent.email,
+        subject: mailOptions.subject,
+        text: `${EMAIL_TEXT_DEFAULT}Your order ${orderContent._id} amounting to ${orderContent.total} is confirmed and will be delivered shortly.`
+    };
+
+    sendEmail(currentMailOptions, (error, info) => {
         if (error) {
-            logger.log('crit',`email - failed to send confirmation to ${orderContent.email} for order ${orderContent._id}.`)
+            logger.log('crit',`email - failed to send confirmation to ${orderContent.email} for order ${orderContent._id}. Error: ${error.message}`)
+            // Reject and requeue the message for retry
+            orderChannel.nack(order, false, true);
         } else {
             logger.info(`email - confirmation sent to ${orderContent.email} for order ${orderContent._id}.`);
             orderChannel.ack(order);
