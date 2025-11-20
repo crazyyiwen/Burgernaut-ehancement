@@ -1,9 +1,9 @@
 const nodemailer = require('nodemailer');
 const { logger } = require('./loggerService');
 
-const EMAIL_ID = process.env.EMAIL_ID || "crazyyiwen2015@gmail.com";
-const EMAIL_PWD = process.env.EMAIL_PWD || "tfkszumuruvcjjmn";
-const EMAIL_SERVICE = process.env.EMAIL_SERVICE || 'gmail';
+const EMAIL_ID = process.env.EMAIL_ID;
+const EMAIL_PWD = process.env.EMAIL_PWD;
+const EMAIL_SERVICE = process.env.EMAIL_SERVICE;
 
 // Validate that credentials are provided
 // if (!EMAIL_ID || !EMAIL_PWD) {
@@ -13,10 +13,10 @@ const EMAIL_SERVICE = process.env.EMAIL_SERVICE || 'gmail';
 // }
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  service: EMAIL_SERVICE,
   auth: {
-    user: "crazyyiwen2015@gmail.com",
-    pass: "tfkszumuruvcjjmn"
+    user: EMAIL_ID,
+    pass: EMAIL_PWD
   }
 });
 
